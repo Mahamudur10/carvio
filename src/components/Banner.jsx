@@ -71,12 +71,7 @@ const Banner = () => {
 
                     {/* Stats Section - Fixed Layout */}
                     <div className="bg-black/40 backdrop-blur-lg rounded-2xl border border-white/10 p-6 md:p-8">
-                        {/* 
-                            FIX: পুরনো কোডে grid-cols-2 md:grid-cols-4 ছিল কিন্তু 
-                            8টা child element ছিল (4 stats + 4 dividers), 
-                            তাই layout ভেঙে যাচ্ছিল।
-                            এখন stats আলাদা রাখা হয়েছে এবং divider CSS দিয়ে করা হয়েছে।
-                        */}
+
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0">
 
                             {/* Stat 1 - Premium Cars */}
