@@ -38,11 +38,12 @@ const Navbar = () => {
     const navLinks = [
         { name: 'Home', path: '/' },
         { name: 'Explore Cars', path: '/explore-cars' },
+        { name: 'Add Car', path: '/add-car' },
     ];
 
     // Private navigation links (only visible when logged in)
     const privateLinks = [
-        { name: 'Add Car', path: '/add-car' },
+        // { name: 'Add Car', path: '/add-car' },
         { name: 'My Bookings', path: '/my-bookings' },
         { name: 'My Added Cars', path: '/my-added-cars' },
     ];
