@@ -30,8 +30,7 @@ const AddCarsPage = () => {
                 body: JSON.stringify(car)
             })
             const data = await res.json()
-            console.log(data)
-
+            
             if (data.success) {
                 toast.success('Car added successfully!');
                 e.target.reset();
@@ -49,31 +48,27 @@ const AddCarsPage = () => {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/50 py-8 sm:py-12 md:py-16">
             <Toaster position="top-right" />
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-
+                
                 {/* Page Header */}
                 <div className="text-center mb-8 sm:mb-10 md:mb-12">
-                    {/* Animated Badge */}
                     <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-full px-4 sm:px-5 py-1.5 sm:py-2 mb-4 sm:mb-5">
                         <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full animate-pulse"></div>
                         <span className="text-xs sm:text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                             List Your Vehicle
                         </span>
                     </div>
-
-                    {/* Title */}
+                    
                     <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4">
                         <span className="text-gray-900">Add Your</span>
                         <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent ml-2 sm:ml-3">
                             Car
                         </span>
                     </h1>
-
-                    {/* Description */}
+                    
                     <p className="text-gray-500 text-sm sm:text-base max-w-2xl mx-auto">
                         Fill out the form below to list your car for rent
                     </p>
-
-                    {/* Gradient Underline */}
+                    
                     <div className="flex justify-center mt-4 sm:mt-5">
                         <div className="w-16 sm:w-20 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full"></div>
                     </div>
@@ -81,9 +76,8 @@ const AddCarsPage = () => {
 
                 {/* Form Card */}
                 <Card className="relative overflow-hidden border-0 shadow-xl rounded-2xl sm:rounded-3xl">
-                    {/* Card Background Pattern */}
                     <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-blue-50/30"></div>
-
+                    
                     {/* Form Header */}
                     <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-5 sm:px-6 md:px-8 py-4 sm:py-5">
                         <div className="flex items-center gap-2 sm:gap-3">
@@ -106,33 +100,32 @@ const AddCarsPage = () => {
                     {/* Form Body */}
                     <form onSubmit={onSubmit} className="relative p-5 sm:p-6 md:p-8 lg:p-10 space-y-6 sm:space-y-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-
+                            
                             {/* Car Name - Full Width */}
                             <div className="md:col-span-2">
                                 <TextField name="carName" isRequired>
                                     <Label className="text-gray-700 font-semibold text-sm">Car Name</Label>
-                                    <Input
-                                        placeholder="e.g., Tesla Model 3, BMW X5"
+                                    <Input 
+                                        placeholder="e.g., Tesla Model 3, BMW X5" 
                                         className="rounded-xl"
-                                        classNames={{ input: "text-gray-800" }}
                                     />
                                     <FieldError />
                                 </TextField>
                             </div>
 
                             {/* Daily Rent Price - BDT Currency */}
-                            <TextField name="dailyRentPrice" type="number" isRequired>
-                                <Label className="text-gray-700 font-semibold text-sm">Daily Rent Price (৳ BDT)</Label>
-                                <Input
-                                    type="number"
-                                    placeholder="e.g., 5000"
-                                    className="rounded-xl"
-                                    startContent={
-                                        <span className="text-gray-500 text-sm">৳</span>
-                                    }
-                                />
-                                <FieldError />
-                            </TextField>
+                            <div>
+                                <TextField name="dailyRentPrice" type="number" isRequired>
+                                    <Label className="text-gray-700 font-semibold text-sm">Daily Rent Price (৳ BDT)</Label>
+                                    <Input 
+                                        type="number" 
+                                        placeholder="e.g., 5000" 
+                                        className="rounded-xl"
+                                    />
+                                    <FieldError />
+                                </TextField>
+                                <p className="text-xs text-gray-400 mt-1">৳ Bangladeshi Taka</p>
+                            </div>
 
                             {/* Car Type */}
                             <div>
