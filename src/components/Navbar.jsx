@@ -4,7 +4,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import axios from 'axios';
 
 const Navbar = () => {
     const pathname = usePathname();
@@ -14,64 +13,48 @@ const Navbar = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Check user authentication status from cookie/token
+    // Check user from localStorage
     useEffect(() => {
-        const checkUser = async () => {
-            try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`, {
-                    withCredentials: true
-                });
-                setUser(response.data.user);
-            } catch (error) {
-                setUser(null);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        checkUser();
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
+        setLoading(false);
     }, []);
 
     const isLoggedIn = !!user;
 
-    // Public navigation links (visible to everyone)
+    // Public navigation links
     const navLinks = [
         { name: 'Home', path: '/' },
         { name: 'Explore Cars', path: '/explore-cars' },
-        { name: 'Add Car', path: '/add-car' },
     ];
 
     // Private navigation links (only visible when logged in)
     const privateLinks = [
-        // { name: 'Add Car', path: '/add-car' },
+        { name: 'Add Car', path: '/add-car' },
         { name: 'My Bookings', path: '/my-bookings' },
         { name: 'My Added Cars', path: '/my-added-cars' },
     ];
 
-    // Check if current route is active for styling
+    // Check if current route is active
     const isActive = (path) => pathname === path;
 
-    // Handle user logout
-    const handleLogout = async () => {
-        try {
-            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`, {}, {
-                withCredentials: true
-            });
-            setUser(null);
-            setIsDropdownOpen(false);
-            router.push('/');
-        } catch (error) {
-            console.error('Logout failed:', error);
-        }
+    // Handle logout
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        setUser(null);
+        setIsDropdownOpen(false);
+        router.push('/');
+        window.location.reload();
     };
 
-    // Show loading spinner while checking authentication
+    // Show loading spinner
     if (loading) {
         return (
             <nav className="bg-white shadow-lg sticky top-0 z-50">
                 <div className="container mx-auto px-4 py-4">
                     <div className="flex justify-between items-center">
-                        {/* Logo with Car Icon */}
                         <div className="flex items-center space-x-2">
                             <div className="text-3xl">🚗</div>
                             <div>
@@ -90,8 +73,8 @@ const Navbar = () => {
         <nav className="bg-white shadow-lg sticky top-0 z-50">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center py-3 md:py-4">
-
-                    {/* Logo Section with Car Icon and Rental Club Text */}
+                    
+                    {/* Logo Section */}
                     <Link href="/" className="flex items-center space-x-3 group">
                         <div className="text-3xl md:text-4xl transition-transform group-hover:scale-110">
                             🚗
@@ -106,40 +89,41 @@ const Navbar = () => {
                         </div>
                     </Link>
 
-                    {/* Desktop Menu - Hidden on mobile */}
+                    {/* Desktop Menu */}
                     <div className="hidden md:flex items-center space-x-8">
-                        {/* Public Navigation Links */}
+                        {/* Public Links */}
                         {navLinks.map((link) => (
                             <Link
                                 key={link.path}
                                 href={link.path}
-                                className={`font-medium transition-all duration-200 ${isActive(link.path)
+                                className={`font-medium transition-all duration-200 ${
+                                    isActive(link.path)
                                         ? 'text-blue-700 font-semibold border-b-2 border-blue-700 pb-1'
                                         : 'text-gray-700 hover:text-blue-600'
-                                    }`}
+                                }`}
                             >
                                 {link.name}
                             </Link>
                         ))}
 
-                        {/* Private Navigation Links - Only visible when logged in */}
+                        {/* Private Links (only when logged in) */}
                         {isLoggedIn && privateLinks.map((link) => (
                             <Link
                                 key={link.path}
                                 href={link.path}
-                                className={`font-medium transition-all duration-200 ${isActive(link.path)
+                                className={`font-medium transition-all duration-200 ${
+                                    isActive(link.path)
                                         ? 'text-blue-700 font-semibold border-b-2 border-blue-700 pb-1'
                                         : 'text-gray-700 hover:text-blue-600'
-                                    }`}
+                                }`}
                             >
                                 {link.name}
                             </Link>
                         ))}
 
-                        {/* Profile Section / Login Button based on auth state */}
+                        {/* Profile Section */}
                         {isLoggedIn ? (
                             <div className="relative">
-                                {/* Profile trigger button */}
                                 <button
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                     className="flex items-center space-x-2 focus:outline-none hover:opacity-80 transition-opacity"
@@ -171,7 +155,6 @@ const Navbar = () => {
                                 {/* Dropdown Menu */}
                                 {isDropdownOpen && (
                                     <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl py-2 border border-gray-100 z-50">
-                                        {/* User info section */}
                                         <div className="px-4 py-3 border-b border-gray-100">
                                             <p className="text-sm font-semibold text-gray-800">
                                                 {user?.name}
@@ -180,8 +163,7 @@ const Navbar = () => {
                                                 {user?.email}
                                             </p>
                                         </div>
-
-                                        {/* Private routes in dropdown */}
+                                        
                                         {privateLinks.map((link) => (
                                             <Link
                                                 key={link.path}
@@ -192,10 +174,9 @@ const Navbar = () => {
                                                 {link.name}
                                             </Link>
                                         ))}
-
+                                        
                                         <hr className="my-1 border-gray-100" />
-
-                                        {/* Logout button */}
+                                        
                                         <button
                                             onClick={handleLogout}
                                             className="block w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
@@ -206,7 +187,6 @@ const Navbar = () => {
                                 )}
                             </div>
                         ) : (
-                            /* Login/Register buttons when user is not logged in */
                             <div className="flex items-center space-x-4">
                                 <Link
                                     href="/login"
@@ -224,19 +204,17 @@ const Navbar = () => {
                         )}
                     </div>
 
-                    {/* Mobile Menu Button - Hamburger with good visibility */}
+                    {/* Mobile Menu Button */}
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                         className="md:hidden p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                         aria-label="Menu"
                     >
                         {isMenuOpen ? (
-                            /* Close icon (X) */
                             <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         ) : (
-                            /* Hamburger icon (three lines) */
                             <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
@@ -244,25 +222,24 @@ const Navbar = () => {
                     </button>
                 </div>
 
-                {/* Mobile Menu - Dropdown with clear background */}
+                {/* Mobile Menu */}
                 {isMenuOpen && (
                     <div className="md:hidden bg-white border-t border-gray-100 py-4 space-y-3">
-                        {/* Public links in mobile menu */}
                         {navLinks.map((link) => (
                             <Link
                                 key={link.path}
                                 href={link.path}
                                 onClick={() => setIsMenuOpen(false)}
-                                className={`block py-2.5 px-2 rounded-lg transition-colors ${isActive(link.path)
+                                className={`block py-2.5 px-2 rounded-lg transition-colors ${
+                                    isActive(link.path)
                                         ? 'text-blue-700 font-semibold bg-blue-50'
                                         : 'text-gray-700 hover:bg-gray-50'
-                                    }`}
+                                }`}
                             >
                                 {link.name}
                             </Link>
                         ))}
-
-                        {/* Private links in mobile menu (if logged in) */}
+                        
                         {isLoggedIn && privateLinks.map((link) => (
                             <Link
                                 key={link.path}
@@ -273,13 +250,9 @@ const Navbar = () => {
                                 {link.name}
                             </Link>
                         ))}
-
-                        {/* Divider */}
-                        {(isLoggedIn || (!isLoggedIn && navLinks.length > 0)) && (
-                            <div className="border-t border-gray-100 my-2"></div>
-                        )}
-
-                        {/* Logout or Login/Register buttons for mobile */}
+                        
+                        <div className="border-t border-gray-100 my-2"></div>
+                        
                         {isLoggedIn ? (
                             <button
                                 onClick={() => {
