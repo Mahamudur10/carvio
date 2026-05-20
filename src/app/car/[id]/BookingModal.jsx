@@ -1,16 +1,25 @@
 // app/car/[id]/BookingModal.jsx
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
 const BookingModal = ({ car }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [user, setUser] = useState(null);
     const [formData, setFormData] = useState({
         driverNeeded: 'No',
         specialNote: ''
     });
+
+    // Get user from localStorage
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -19,16 +28,28 @@ const BookingModal = ({ car }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (!user) {
+            toast.error('Please login to book a car');
+            setIsOpen(false);
+            return;
+        }
+        
         setLoading(true);
 
         const bookingData = {
             carId: car._id,
             carName: car.carName || car.name,
             carPrice: car.dailyRentPrice || car.price,
+            imageUrl: car.imageUrl || car.image,
+            pickupLocation: car.pickupLocation || car.location,
             driverNeeded: formData.driverNeeded,
             specialNote: formData.specialNote,
             bookingDate: new Date().toISOString(),
-            totalPrice: (car.dailyRentPrice || car.price) * 1
+            totalPrice: parseInt(car.dailyRentPrice || car.price),
+            userEmail: user?.email,
+            userName: user?.name,
+            status: 'confirmed'
         };
 
         console.log('Booking Data:', bookingData);
@@ -46,7 +67,7 @@ const BookingModal = ({ car }) => {
                 setIsOpen(false);
                 setFormData({ driverNeeded: 'No', specialNote: '' });
             } else {
-                toast.error('Failed to book. Please try again.');
+                toast.error(data.message || 'Failed to book. Please try again.');
             }
         } catch (error) {
             console.error('Booking error:', error);
@@ -56,6 +77,9 @@ const BookingModal = ({ car }) => {
         }
     };
 
+    // Check if car is available
+    const isAvailable = (car.availabilityStatus || car.availability) === 'Available';
+
     return (
         <>
             <Toaster position="top-right" />
@@ -63,9 +87,9 @@ const BookingModal = ({ car }) => {
             {/* Book Now Button */}
             <button
                 onClick={() => setIsOpen(true)}
-                disabled={(car.availabilityStatus || car.availability) !== 'Available'}
+                disabled={!isAvailable}
                 className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
-                    (car.availabilityStatus || car.availability) === 'Available'
+                    isAvailable
                         ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg hover:scale-105 cursor-pointer'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
@@ -80,6 +104,7 @@ const BookingModal = ({ car }) => {
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
+                        
                         {/* Modal Header */}
                         <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-6 py-4 rounded-t-2xl">
                             <div className="flex justify-between items-center">
@@ -98,14 +123,19 @@ const BookingModal = ({ car }) => {
 
                         {/* Modal Body */}
                         <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                            
                             {/* Car Details Summary */}
-                            <div className="bg-gray-50 rounded-xl p-4">
+                            <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-xl p-4 border border-gray-100">
+                                <div className="flex justify-between mb-2">
+                                    <span className="text-gray-600">Car Model:</span>
+                                    <span className="font-semibold text-gray-800">{car.carName || car.name}</span>
+                                </div>
                                 <div className="flex justify-between mb-2">
                                     <span className="text-gray-600">Daily Rent:</span>
-                                    <span className="font-semibold text-gray-800">৳{car.dailyRentPrice || car.price}/day</span>
+                                    <span className="font-semibold text-blue-600">৳{car.dailyRentPrice || car.price}/day</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600">Location:</span>
+                                    <span className="text-gray-600">Pickup Location:</span>
                                     <span className="font-semibold text-gray-800">{car.pickupLocation || car.location}</span>
                                 </div>
                             </div>
@@ -115,7 +145,7 @@ const BookingModal = ({ car }) => {
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                                     Driver Needed? <span className="text-red-500">*</span>
                                 </label>
-                                <div className="flex gap-4">
+                                <div className="flex gap-6">
                                     <label className="flex items-center gap-2 cursor-pointer">
                                         <input
                                             type="radio"
@@ -123,7 +153,7 @@ const BookingModal = ({ car }) => {
                                             value="Yes"
                                             checked={formData.driverNeeded === 'Yes'}
                                             onChange={handleChange}
-                                            className="w-4 h-4 text-blue-600"
+                                            className="w-4 h-4 text-blue-600 focus:ring-blue-500"
                                         />
                                         <span className="text-gray-700">Yes</span>
                                     </label>
@@ -134,7 +164,7 @@ const BookingModal = ({ car }) => {
                                             value="No"
                                             checked={formData.driverNeeded === 'No'}
                                             onChange={handleChange}
-                                            className="w-4 h-4 text-blue-600"
+                                            className="w-4 h-4 text-blue-600 focus:ring-blue-500"
                                         />
                                         <span className="text-gray-700">No</span>
                                     </label>
@@ -152,9 +182,21 @@ const BookingModal = ({ car }) => {
                                     onChange={handleChange}
                                     rows="3"
                                     placeholder="Any special requests or notes..."
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                                 />
                             </div>
+
+                            {/* User Info Note */}
+                            {user && (
+                                <div className="bg-blue-50 rounded-xl p-3">
+                                    <p className="text-xs text-blue-600 flex items-center gap-1">
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        Booking will be confirmed under: {user.email}
+                                    </p>
+                                </div>
+                            )}
 
                             {/* Submit Button */}
                             <button
@@ -168,7 +210,12 @@ const BookingModal = ({ car }) => {
                                         Processing...
                                     </div>
                                 ) : (
-                                    'Confirm Booking'
+                                    <div className="flex items-center justify-center gap-2">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Confirm Booking
+                                    </div>
                                 )}
                             </button>
                         </form>
