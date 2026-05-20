@@ -1,5 +1,8 @@
+
 "use client";
 
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
     FieldError,
     Input,
@@ -14,35 +17,95 @@ import {
 import toast, { Toaster } from 'react-hot-toast';
 
 const AddCarsPage = () => {
+    const router = useRouter();
+    const [loading, setLoading] = useState(false);
+    const [user, setUser] = useState(null);
+
+    // Check if user is logged in
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        if (!storedUser) {
+            router.push('/login');
+            return;
+        }
+        setUser(JSON.parse(storedUser));
+    }, [router]);
+
     const onSubmit = async (e) => {
         e.preventDefault();
+        
+        if (!user) {
+            toast.error('Please login to add a car');
+            router.push('/login');
+            return;
+        }
+        
+        setLoading(true);
+        
         const formData = new FormData(e.currentTarget);
-        const car = Object.fromEntries(formData.entries());
+        
+        // Create car object with ownerEmail
+        const car = {
+            carName: formData.get('carName'),
+            dailyRentPrice: formData.get('dailyRentPrice'),
+            carType: formData.get('carType'),
+            imageUrl: formData.get('imageUrl'),
+            seatCapacity: formData.get('seatCapacity'),
+            pickupLocation: formData.get('pickupLocation'),
+            description: formData.get('description'),
+            availabilityStatus: formData.get('availabilityStatus'),
+            ownerEmail: user.email,        // 👈 ইউজারের ইমেইল যোগ করলাম
+            ownerName: user.name,           // 👈 ইউজারের নাম যোগ করলাম
+            createdAt: new Date()            // 👈 তৈরি করার তারিখ
+        };
 
-        console.log(car);
+        console.log('Sending car:', car);
 
         try {
             const res = await fetch('http://localhost:5000/cars', {
                 method: 'POST',
                 headers: {
-                    'content-type': 'application/json'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(car)
-            })
-            const data = await res.json()
+            });
+            
+            const data = await res.json();
+            console.log('Response:', data);
             
             if (data.success) {
                 toast.success('Car added successfully!');
-                e.target.reset();
+                e.target.reset(); // Reset form
+                setTimeout(() => {
+                    router.push('/my-added-cars');
+                }, 1500);
             } else {
-                toast.error('Failed to add car');
+                toast.error(data.message || 'Failed to add car');
             }
         } catch (error) {
+            console.error('Error adding car:', error);
             toast.error('Something went wrong!');
+        } finally {
+            setLoading(false);
         }
-    }
+    };
 
     const carTypes = ['SUV', 'Sedan', 'Hatchback', 'Luxury', 'Electric', 'Sports', 'Convertible'];
+
+    // Show loading while checking auth
+    if (!user) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50/30">
+                <div className="text-center">
+                    <div className="relative">
+                        <div className="w-16 h-16 border-4 border-blue-200 rounded-full"></div>
+                        <div className="w-16 h-16 border-4 border-t-blue-600 border-r-purple-600 border-b-indigo-600 border-l-transparent rounded-full animate-spin absolute top-0"></div>
+                    </div>
+                    <p className="mt-4 text-gray-600">Checking authentication...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/50 py-8 sm:py-12 md:py-16">
@@ -51,8 +114,8 @@ const AddCarsPage = () => {
                 
                 {/* Page Header */}
                 <div className="text-center mb-8 sm:mb-10 md:mb-12">
-                    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-full px-4 sm:px-5 py-1.5 sm:py-2 mb-4 sm:mb-5">
-                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full animate-pulse"></div>
+                    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-full px-4 sm:px-5 py-1.5 sm:py-2 mb-4">
+                        <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full animate-pulse"></div>
                         <span className="text-xs sm:text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                             List Your Vehicle
                         </span>
@@ -113,7 +176,7 @@ const AddCarsPage = () => {
                                 </TextField>
                             </div>
 
-                            {/* Daily Rent Price - BDT Currency */}
+                            {/* Daily Rent Price */}
                             <div>
                                 <TextField name="dailyRentPrice" type="number" isRequired>
                                     <Label className="text-gray-700 font-semibold text-sm">Daily Rent Price (৳ BDT)</Label>
@@ -247,14 +310,22 @@ const AddCarsPage = () => {
                         {/* Submit Button */}
                         <Button
                             type="submit"
+                            disabled={loading}
                             className="w-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white font-semibold py-3 sm:py-3.5 rounded-xl hover:shadow-xl hover:scale-[1.02] transition-all duration-200"
                         >
-                            <div className="flex items-center justify-center gap-2">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                                Add Car
-                            </div>
+                            {loading ? (
+                                <div className="flex items-center justify-center gap-2">
+                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    Adding Car...
+                                </div>
+                            ) : (
+                                <div className="flex items-center justify-center gap-2">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
+                                    Add Car
+                                </div>
+                            )}
                         </Button>
                     </form>
                 </Card>
