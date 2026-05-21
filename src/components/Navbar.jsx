@@ -1,9 +1,10 @@
 // components/Navbar.jsx
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { authClient } from "@/lib/auth-client";
 
 const Navbar = () => {
     const pathname = usePathname();
@@ -13,53 +14,57 @@ const Navbar = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Check user from localStorage
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-        setLoading(false);
+        const checkUser = () => {
+            const storedUser = localStorage.getItem("user");
+            if (storedUser) {
+                setUser(JSON.parse(storedUser));
+            }
+            setLoading(false);
+        };
+        checkUser();
+        
+        // Listen for storage changes (when login happens)
+        window.addEventListener("storage", checkUser);
+        return () => window.removeEventListener("storage", checkUser);
     }, []);
 
     const isLoggedIn = !!user;
 
-    // Public navigation links
     const navLinks = [
-        { name: 'Home', path: '/' },
-        { name: 'Explore Cars', path: '/explore-cars' },
+        { name: "Home", path: "/" },
+        { name: "Explore Cars", path: "/explore-cars" },
     ];
 
-    // Private navigation links (only visible when logged in)
     const privateLinks = [
-        { name: 'Add Car', path: '/add-car' },
-        { name: 'My Bookings', path: '/my-bookings' },
-        { name: 'My Added Cars', path: '/my-added-cars' },
+        { name: "Add Car", path: "/add-car" },
+        { name: "My Bookings", path: "/my-bookings" },
+        { name: "My Added Cars", path: "/my-added-cars" },
     ];
 
-    // Check if current route is active
     const isActive = (path) => pathname === path;
 
-    // Handle logout
-    const handleLogout = () => {
-        localStorage.removeItem('user');
+    const handleLogout = async () => {
+        await authClient.signOut();
+        localStorage.removeItem("user");
         setUser(null);
-        setIsDropdownOpen(false);
-        router.push('/');
-        window.location.reload();
+        router.push("/");
     };
 
-    // Show loading spinner
     if (loading) {
         return (
             <nav className="bg-white shadow-lg sticky top-0 z-50">
-                <div className="container mx-auto px-4 py-4">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex justify-between items-center">
-                        <div className="flex items-center space-x-2">
-                            <div className="text-3xl">🚗</div>
+                        <div className="flex items-center space-x-3">
+                            <div className="text-3xl md:text-4xl">🚗</div>
                             <div>
-                                <div className="text-2xl font-bold text-gray-800">Carvio</div>
-                                <div className="text-xs text-gray-500 -mt-1">Rental Club</div>
+                                <div className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">
+                                    Carvio
+                                </div>
+                                <div className="text-[10px] md:text-xs text-gray-500 -mt-1">
+                                    Rental Club
+                                </div>
                             </div>
                         </div>
                         <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
@@ -74,7 +79,7 @@ const Navbar = () => {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center py-3 md:py-4">
                     
-                    {/* Logo Section */}
+                    {/* Logo */}
                     <Link href="/" className="flex items-center space-x-3 group">
                         <div className="text-3xl md:text-4xl transition-transform group-hover:scale-110">
                             🚗
@@ -83,7 +88,7 @@ const Navbar = () => {
                             <div className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">
                                 Carvio
                             </div>
-                            <div className="text-[10px] md:text-xs text-gray-500 -mt-1 tracking-wide">
+                            <div className="text-[10px] md:text-xs text-gray-500 -mt-1">
                                 Rental Club
                             </div>
                         </div>
@@ -91,59 +96,61 @@ const Navbar = () => {
 
                     {/* Desktop Menu */}
                     <div className="hidden md:flex items-center space-x-8">
-                        {/* Public Links */}
                         {navLinks.map((link) => (
                             <Link
                                 key={link.path}
                                 href={link.path}
                                 className={`font-medium transition-all duration-200 ${
                                     isActive(link.path)
-                                        ? 'text-blue-700 font-semibold border-b-2 border-blue-700 pb-1'
-                                        : 'text-gray-700 hover:text-blue-600'
+                                        ? "text-blue-700 font-semibold border-b-2 border-blue-700 pb-1"
+                                        : "text-gray-700 hover:text-blue-600"
                                 }`}
                             >
                                 {link.name}
                             </Link>
                         ))}
 
-                        {/* Private Links (only when logged in) */}
-                        {isLoggedIn && privateLinks.map((link) => (
-                            <Link
-                                key={link.path}
-                                href={link.path}
-                                className={`font-medium transition-all duration-200 ${
-                                    isActive(link.path)
-                                        ? 'text-blue-700 font-semibold border-b-2 border-blue-700 pb-1'
-                                        : 'text-gray-700 hover:text-blue-600'
-                                }`}
-                            >
-                                {link.name}
-                            </Link>
-                        ))}
+                        {/* Private Links - শুধু লগইন করলে দেখাবে */}
+                        {isLoggedIn &&
+                            privateLinks.map((link) => (
+                                <Link
+                                    key={link.path}
+                                    href={link.path}
+                                    className={`font-medium transition-all duration-200 ${
+                                        isActive(link.path)
+                                            ? "text-blue-700 font-semibold border-b-2 border-blue-700 pb-1"
+                                            : "text-gray-700 hover:text-blue-600"
+                                    }`}
+                                >
+                                    {link.name}
+                                </Link>
+                            ))}
 
-                        {/* Profile Section */}
+                        {/* User Section */}
                         {isLoggedIn ? (
                             <div className="relative">
                                 <button
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                     className="flex items-center space-x-2 focus:outline-none hover:opacity-80 transition-opacity"
                                 >
-                                    {user?.photoURL ? (
+                                    {user?.image ? (
                                         <img
-                                            src={user.photoURL}
+                                            src={user.image}
                                             alt={user.name}
                                             className="w-10 h-10 rounded-full border-2 border-blue-600 object-cover"
                                         />
                                     ) : (
                                         <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center text-white font-semibold">
-                                            {user?.name?.charAt(0) || 'U'}
+                                            {user?.name?.charAt(0) || "U"}
                                         </div>
                                     )}
-                                    <span className="text-gray-700 font-medium">
-                                        {user?.name?.split(' ')[0]}
+                                    <span className="text-gray-700 font-medium hidden lg:block">
+                                        {user?.name?.split(" ")[0]}
                                     </span>
                                     <svg
-                                        className="w-4 h-4 text-gray-500"
+                                        className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+                                            isDropdownOpen ? "rotate-180" : ""
+                                        }`}
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -152,7 +159,6 @@ const Navbar = () => {
                                     </svg>
                                 </button>
 
-                                {/* Dropdown Menu */}
                                 {isDropdownOpen && (
                                     <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl py-2 border border-gray-100 z-50">
                                         <div className="px-4 py-3 border-b border-gray-100">
@@ -196,7 +202,7 @@ const Navbar = () => {
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-200 hover:scale-105"
+                                    className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-200"
                                 >
                                     Register
                                 </Link>
@@ -232,24 +238,25 @@ const Navbar = () => {
                                 onClick={() => setIsMenuOpen(false)}
                                 className={`block py-2.5 px-2 rounded-lg transition-colors ${
                                     isActive(link.path)
-                                        ? 'text-blue-700 font-semibold bg-blue-50'
-                                        : 'text-gray-700 hover:bg-gray-50'
+                                        ? "text-blue-700 font-semibold bg-blue-50"
+                                        : "text-gray-700 hover:bg-gray-50"
                                 }`}
                             >
                                 {link.name}
                             </Link>
                         ))}
                         
-                        {isLoggedIn && privateLinks.map((link) => (
-                            <Link
-                                key={link.path}
-                                href={link.path}
-                                onClick={() => setIsMenuOpen(false)}
-                                className="block py-2.5 px-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-                            >
-                                {link.name}
-                            </Link>
-                        ))}
+                        {isLoggedIn &&
+                            privateLinks.map((link) => (
+                                <Link
+                                    key={link.path}
+                                    href={link.path}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="block py-2.5 px-2 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                                >
+                                    {link.name}
+                                </Link>
+                            ))}
                         
                         <div className="border-t border-gray-100 my-2"></div>
                         

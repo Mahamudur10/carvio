@@ -14,7 +14,7 @@ const AvailableCars = () => {
         fetchCars();
     }, []);
 
-    // Real API call (backend ready হলে)
+    // Real API call (backend ready)
     const fetchCars = async () => {
         try {
             const res = await fetch('http://localhost:5000/explore-cars');
