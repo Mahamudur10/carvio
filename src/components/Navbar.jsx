@@ -59,19 +59,19 @@ const Navbar = () => {
 
     if (loading) {
         return (
-            <nav className="bg-white shadow-lg sticky top-0 z-50">
+            <nav className="sticky top-0 z-50" style={{ background: '#0A0A0F', borderBottom: '1px solid rgba(218,165,32,0.12)' }}>
                 <div className="container mx-auto px-4 py-4">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center space-x-3">
                             <div className="text-3xl">🚗</div>
                             <div>
-                                <div className="text-xl font-bold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">
+                                <div className="text-xl font-bold" style={{ background: 'linear-gradient(135deg, #DAA520, #F5C842)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                                     Carvio
                                 </div>
-                                <div className="text-xs text-gray-500">Rental Club</div>
+                                <div className="text-xs text-[#666660]">Rental Club</div>
                             </div>
                         </div>
-                        <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-8 h-8 border-2 border-[#DAA520] border-t-transparent rounded-full animate-spin"></div>
                     </div>
                 </div>
             </nav>
@@ -79,20 +79,20 @@ const Navbar = () => {
     }
 
     return (
-        <nav className="bg-white shadow-lg sticky top-0 z-50">
+        <nav className="sticky top-0 z-50 backdrop-blur-md" style={{ background: 'rgba(10,10,15,0.85)', borderBottom: '1px solid rgba(218,165,32,0.15)' }}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center py-3 md:py-4">
                     
-                    {/* Logo */}
+                    {/* Logo - Golden gradient */}
                     <Link href="/" className="flex items-center space-x-3 group">
                         <div className="text-3xl md:text-4xl transition-transform group-hover:scale-110">
                             🚗
                         </div>
                         <div>
-                            <div className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">
+                            <div className="text-xl md:text-2xl font-bold" style={{ background: 'linear-gradient(135deg, #DAA520 0%, #F5C842 40%, #DAA520 70%, #C8960C 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                                 Carvio
                             </div>
-                            <div className="text-[10px] md:text-xs text-gray-500 -mt-1">
+                            <div className="text-[10px] md:text-xs text-[#666660] -mt-1 tracking-wide">
                                 Rental Club
                             </div>
                         </div>
@@ -104,10 +104,10 @@ const Navbar = () => {
                             <Link
                                 key={link.path}
                                 href={link.path}
-                                className={`font-medium transition-all ${
+                                className={`font-medium transition-all duration-200 ${
                                     isActive(link.path)
-                                        ? "text-blue-700 font-semibold border-b-2 border-blue-700 pb-1"
-                                        : "text-gray-700 hover:text-blue-600"
+                                        ? "text-[#DAA520] font-semibold border-b-2 border-[#DAA520] pb-1"
+                                        : "text-[#888880] hover:text-[#DAA520]"
                                 }`}
                             >
                                 {link.name}
@@ -119,10 +119,10 @@ const Navbar = () => {
                                 <Link
                                     key={link.path}
                                     href={link.path}
-                                    className={`font-medium transition-all ${
+                                    className={`font-medium transition-all duration-200 ${
                                         isActive(link.path)
-                                            ? "text-blue-700 font-semibold border-b-2 border-blue-700 pb-1"
-                                            : "text-gray-700 hover:text-blue-600"
+                                            ? "text-[#DAA520] font-semibold border-b-2 border-[#DAA520] pb-1"
+                                            : "text-[#888880] hover:text-[#DAA520]"
                                     }`}
                                 >
                                     {link.name}
@@ -133,36 +133,36 @@ const Navbar = () => {
                             <div className="relative">
                                 <button
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                    className="flex items-center space-x-2 focus:outline-none"
+                                    className="flex items-center space-x-2 focus:outline-none group"
                                 >
-                                    {/* Image - Google Login Image Show */}
                                     {user?.image ? (
                                         <img
                                             src={user.image}
                                             alt={user.name}
-                                            className="w-10 h-10 rounded-full border-2 border-blue-600 object-cover"
+                                            className="w-10 h-10 rounded-full border-2 border-[#DAA520] object-cover"
                                             referrerPolicy="no-referrer"
                                             onError={(e) => {
                                                 e.target.style.display = 'none';
-                                                e.target.nextSibling.style.display = 'flex';
+                                                if (e.target.nextSibling) {
+                                                    e.target.nextSibling.style.display = 'flex';
+                                                }
                                             }}
                                         />
                                     ) : null}
-                                    {/* Fallback initial */}
-                                    <div className={`w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center text-white font-semibold ${user?.image ? 'hidden' : ''}`}>
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${user?.image ? 'hidden' : ''}`} style={{ background: 'linear-gradient(135deg, #DAA520, #F5C842)' }}>
                                         {user?.name?.charAt(0) || "U"}
                                     </div>
-                                    <span className="text-gray-700 font-medium hidden lg:block">
+                                    <span className="text-[#888880] font-medium hidden lg:block group-hover:text-[#DAA520] transition">
                                         {user?.name?.split(" ")[0]}
                                     </span>
-                                    <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} style={{ color: '#888880' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
 
                                 {isDropdownOpen && (
-                                    <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl py-2 border z-50">
-                                        <div className="px-4 py-3 border-b">
+                                    <div className="absolute right-0 mt-3 w-56 rounded-xl shadow-xl py-2 border z-50" style={{ background: '#0A0A0F', borderColor: 'rgba(218,165,32,0.2)' }}>
+                                        <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(218,165,32,0.1)' }}>
                                             <div className="flex items-center gap-3">
                                                 {user?.image ? (
                                                     <img
@@ -172,13 +172,13 @@ const Navbar = () => {
                                                         referrerPolicy="no-referrer"
                                                     />
                                                 ) : (
-                                                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center text-white font-semibold">
+                                                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold" style={{ background: 'linear-gradient(135deg, #DAA520, #F5C842)' }}>
                                                         {user?.name?.charAt(0) || "U"}
                                                     </div>
                                                 )}
                                                 <div>
-                                                    <p className="text-sm font-semibold">{user?.name}</p>
-                                                    <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                                                    <p className="text-sm font-semibold text-white">{user?.name}</p>
+                                                    <p className="text-xs text-[#666660] truncate">{user?.email}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -187,15 +187,15 @@ const Navbar = () => {
                                                 key={link.path}
                                                 href={link.path}
                                                 onClick={() => setIsDropdownOpen(false)}
-                                                className="block px-4 py-2 text-sm hover:bg-gray-50"
+                                                className="block px-4 py-2 text-sm text-[#888880] hover:text-[#DAA520] hover:bg-white/5 transition-colors"
                                             >
                                                 {link.name}
                                             </Link>
                                         ))}
-                                        <hr className="my-1" />
+                                        <hr className="my-1" style={{ borderColor: 'rgba(218,165,32,0.1)' }} />
                                         <button
                                             onClick={handleLogout}
-                                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                            className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
                                         >
                                             Logout
                                         </button>
@@ -204,12 +204,13 @@ const Navbar = () => {
                             </div>
                         ) : (
                             <div className="flex items-center space-x-4">
-                                <Link href="/login" className="text-gray-700 hover:text-blue-600">
+                                <Link href="/login" className="text-[#888880] hover:text-[#DAA520] transition-colors">
                                     Login
                                 </Link>
                                 <Link
                                     href="/register"
-                                    className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:shadow-lg transition"
+                                    className="px-5 py-2 rounded-lg font-medium transition-all duration-200 hover:shadow-lg"
+                                    style={{ background: 'linear-gradient(135deg, #DAA520, #F5C842)', color: '#0A0A0F' }}
                                 >
                                     Register
                                 </Link>
@@ -220,15 +221,16 @@ const Navbar = () => {
                     {/* Mobile Menu Button */}
                     <button
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="md:hidden p-2 rounded-lg bg-gray-100"
+                        className="md:hidden p-2 rounded-lg transition-colors"
+                        style={{ background: 'rgba(218,165,32,0.1)' }}
                     >
                         {isMenuOpen ? (
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            <svg className="w-6 h-6" style={{ color: '#DAA520' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         ) : (
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                            <svg className="w-6 h-6" style={{ color: '#DAA520' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         )}
                     </button>
@@ -236,13 +238,17 @@ const Navbar = () => {
 
                 {/* Mobile Menu */}
                 {isMenuOpen && (
-                    <div className="md:hidden py-4 space-y-3">
+                    <div className="md:hidden py-4 space-y-3" style={{ borderTop: '1px solid rgba(218,165,32,0.1)' }}>
                         {navLinks.map((link) => (
                             <Link
                                 key={link.path}
                                 href={link.path}
                                 onClick={() => setIsMenuOpen(false)}
-                                className="block py-2 px-2 rounded-lg hover:bg-gray-50"
+                                className={`block py-2.5 px-2 rounded-lg transition-colors ${
+                                    isActive(link.path)
+                                        ? "text-[#DAA520] font-semibold"
+                                        : "text-[#888880] hover:text-[#DAA520] hover:bg-white/5"
+                                }`}
                             >
                                 {link.name}
                             </Link>
@@ -253,27 +259,28 @@ const Navbar = () => {
                                     key={link.path}
                                     href={link.path}
                                     onClick={() => setIsMenuOpen(false)}
-                                    className="block py-2 px-2 rounded-lg hover:bg-gray-50"
+                                    className="block py-2.5 px-2 rounded-lg text-[#888880] hover:text-[#DAA520] hover:bg-white/5 transition-colors"
                                 >
                                     {link.name}
                                 </Link>
                             ))}
-                        <div className="border-t pt-3">
+                        <div className="border-t pt-3" style={{ borderColor: 'rgba(218,165,32,0.1)' }}>
                             {isLoggedIn ? (
                                 <button
                                     onClick={handleLogout}
-                                    className="block w-full text-left py-2 px-2 text-red-600"
+                                    className="block w-full text-left py-2.5 px-2 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
                                 >
                                     Logout
                                 </button>
                             ) : (
                                 <div className="space-y-2">
-                                    <Link href="/login" className="block py-2 px-2 hover:bg-gray-50">
+                                    <Link href="/login" className="block py-2.5 px-2 rounded-lg text-[#888880] hover:text-[#DAA520] hover:bg-white/5 transition-colors">
                                         Login
                                     </Link>
                                     <Link
                                         href="/register"
-                                        className="block py-2 px-2 text-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg"
+                                        className="block py-2.5 px-2 text-center rounded-lg font-medium"
+                                        style={{ background: 'linear-gradient(135deg, #DAA520, #F5C842)', color: '#0A0A0F' }}
                                     >
                                         Register
                                     </Link>
