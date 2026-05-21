@@ -1,40 +1,47 @@
-// app/car/[id]/BookingModal.jsx
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 
 const BookingModal = ({ car }) => {
+    const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [user, setUser] = useState(null);
     const [formData, setFormData] = useState({
         driverNeeded: 'No',
         specialNote: ''
     });
-
-    // Get user from localStorage
-    useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    // Check if user is logged in before opening modal
+    const handleOpenModal = () => {
+        const user = localStorage.getItem('user');
+        if (!user) {
+            toast.error('Please login to book a car');
+            setTimeout(() => {
+                router.push('/login');
+            }, 1500);
+            return;
+        }
+        setIsOpen(true);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         
+        const user = localStorage.getItem('user');
         if (!user) {
             toast.error('Please login to book a car');
-            setIsOpen(false);
+            router.push('/login');
             return;
         }
         
+        const userData = JSON.parse(user);
         setLoading(true);
 
         const bookingData = {
@@ -47,8 +54,8 @@ const BookingModal = ({ car }) => {
             specialNote: formData.specialNote,
             bookingDate: new Date().toISOString(),
             totalPrice: parseInt(car.dailyRentPrice || car.price),
-            userEmail: user?.email,
-            userName: user?.name,
+            userEmail: userData?.email,
+            userName: userData?.name,
             status: 'confirmed'
         };
 
@@ -67,7 +74,7 @@ const BookingModal = ({ car }) => {
                 setIsOpen(false);
                 setFormData({ driverNeeded: 'No', specialNote: '' });
             } else {
-                toast.error(data.message || 'Failed to book. Please try again.');
+                toast.error('Failed to book. Please try again.');
             }
         } catch (error) {
             console.error('Booking error:', error);
@@ -77,7 +84,6 @@ const BookingModal = ({ car }) => {
         }
     };
 
-    // Check if car is available
     const isAvailable = (car.availabilityStatus || car.availability) === 'Available';
 
     return (
@@ -86,7 +92,7 @@ const BookingModal = ({ car }) => {
             
             {/* Book Now Button */}
             <button
-                onClick={() => setIsOpen(true)}
+                onClick={handleOpenModal}
                 disabled={!isAvailable}
                 className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
                     isAvailable
@@ -103,7 +109,7 @@ const BookingModal = ({ car }) => {
             {/* Modal */}
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
+                    <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
                         
                         {/* Modal Header */}
                         <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-6 py-4 rounded-t-2xl">
@@ -140,7 +146,7 @@ const BookingModal = ({ car }) => {
                                 </div>
                             </div>
 
-                            {/* Driver Needed - Required Field */}
+                            {/* Driver Needed */}
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                                     Driver Needed? <span className="text-red-500">*</span>
@@ -153,7 +159,7 @@ const BookingModal = ({ car }) => {
                                             value="Yes"
                                             checked={formData.driverNeeded === 'Yes'}
                                             onChange={handleChange}
-                                            className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                                            className="w-4 h-4 text-blue-600"
                                         />
                                         <span className="text-gray-700">Yes</span>
                                     </label>
@@ -164,14 +170,14 @@ const BookingModal = ({ car }) => {
                                             value="No"
                                             checked={formData.driverNeeded === 'No'}
                                             onChange={handleChange}
-                                            className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                                            className="w-4 h-4 text-blue-600"
                                         />
                                         <span className="text-gray-700">No</span>
                                     </label>
                                 </div>
                             </div>
 
-                            {/* Special Note - Optional */}
+                            {/* Special Note */}
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                                     Special Note (Optional)
@@ -182,27 +188,15 @@ const BookingModal = ({ car }) => {
                                     onChange={handleChange}
                                     rows="3"
                                     placeholder="Any special requests or notes..."
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                                 />
                             </div>
-
-                            {/* User Info Note */}
-                            {user && (
-                                <div className="bg-blue-50 rounded-xl p-3">
-                                    <p className="text-xs text-blue-600 flex items-center gap-1">
-                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                        </svg>
-                                        Booking will be confirmed under: {user.email}
-                                    </p>
-                                </div>
-                            )}
 
                             {/* Submit Button */}
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 disabled:opacity-70 disabled:hover:scale-100"
+                                className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 disabled:opacity-70"
                             >
                                 {loading ? (
                                     <div className="flex items-center justify-center gap-2">
