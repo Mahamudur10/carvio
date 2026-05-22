@@ -30,7 +30,7 @@ const Banner = () => {
                 }}
             />
 
-            {/* Subtle gradient mesh */}
+            {/*Subtle gradient mesh */}
             <div className="absolute inset-0">
                 <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full"
                     style={{ background: 'radial-gradient(circle, rgba(218,165,32,0.06) 0%, transparent 70%)' }} />
