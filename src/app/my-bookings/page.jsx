@@ -32,7 +32,7 @@ const MyBookingsPage = () => {
 
     const fetchMyBookings = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/api/my-bookings?email=${user.email}`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/my-bookings?email=${user.email}`);
             const data = await res.json();
             setBookings(data);
         } catch (error) {

@@ -52,7 +52,7 @@ const UpdateCarPage = ({ params }) => {
 
     const fetchCarData = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/cars/${carId}`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/cars/${carId}`);
             const data = await res.json();
 
             // Check if car belongs to logged in user
@@ -93,7 +93,7 @@ const UpdateCarPage = ({ params }) => {
         };
 
         try {
-            const res = await fetch(`http://localhost:5000/api/cars/${carId}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/cars/${carId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'

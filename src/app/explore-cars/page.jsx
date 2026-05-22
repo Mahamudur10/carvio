@@ -3,7 +3,7 @@ import React from 'react';
 import ExploreCarsClient from './ExploreCarsClient';
 
 const ExploreCars = async () => {
-    const res = await fetch('http://localhost:5000/explore-cars', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/explore-cars`, {
         cache: 'no-store'
     });
     const cars = await res.json();

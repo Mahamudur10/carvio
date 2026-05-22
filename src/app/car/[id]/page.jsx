@@ -4,7 +4,7 @@ import Link from 'next/link';
 import BookingModal from './BookingModal';
 
 async function getCar(id) {
-    const res = await fetch(`http://localhost:5000/cars/${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/cars/${id}`, {
         cache: 'no-store'
     });
     if (!res.ok) return null;

@@ -33,7 +33,7 @@ const MyAddedCarsPage = () => {
 
     const fetchMyCars = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/api/my-cars?email=${user.email}`);
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/my-cars?email=${user.email}`);
             const data = await res.json();
             setCars(data);
         } catch (error) {
@@ -47,7 +47,7 @@ const MyAddedCarsPage = () => {
     // Delete car
     const handleDelete = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/api/cars/${deleteModal.carId}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/cars/${deleteModal.carId}`, {
                 method: 'DELETE',
             });
             const data = await res.json();

@@ -16,7 +16,7 @@ const AvailableCars = () => {
 
     const fetchCars = async () => {
         try {
-            const res = await fetch('http://localhost:5000/explore-cars');
+            const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/explore-cars`);
             const data = await res.json();
             setCars(data);
             setLoading(false);
