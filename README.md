@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🚗 Carvio - Premium Car Rental Platform
 
-## Getting Started
+## Live Site URL
+🔗 **Frontend:** [https://carvio-three.vercel.app](https://carvio-three.vercel.app)
 
-First, run the development server:
+🔗 **Backend API:** [https://carvio-server.vercel.app](https://carvio-server.vercel.app)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📌 About Carvio
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Carvio is a modern, full-stack car rental platform that allows users to browse, rent, and manage premium cars. Built with Next.js 16, MongoDB, and Tailwind CSS, it offers a seamless experience for both car renters and owners.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## ✨ Key Features
 
-To learn more about Next.js, take a look at the following resources:
+| # | Feature | Description |
+|---|---------|-------------|
+| 1 | 🔐 **Secure Authentication** | Login/Register with Email/Password and Google OAuth |
+| 2 | 🚗 **Car Listings** | Browse 500+ premium cars with search and filter functionality |
+| 3 | 📅 **Easy Booking System** | Book cars with driver needed option and special notes |
+| 4 | 📊 **User Dashboard** | Manage your bookings and added cars from one place |
+| 5 | ✏️ **CRUD Operations** | Add, update, and delete your own car listings |
+| 6 | 🎨 **Premium Dark Theme** | Modern black and gold design with smooth animations |
+| 7 | 📱 **Fully Responsive** | Perfect experience on mobile, tablet, and desktop |
+| 8 | 🚀 **Fast Performance** | Built with Next.js 16 and Turbopack |
+| 9 | 🔍 **Search & Filter** | Search by car name and filter by car type |
+| 10 | 💾 **MongoDB Database** | All data stored securely in MongoDB Atlas |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🛠️ Tech Stack
 
-## Deploy on Vercel
+### Frontend
+- **Framework:** Next.js 16 (App Router)
+- **Styling:** Tailwind CSS
+- **UI Components:** HeroUI
+- **Authentication:** Google OAuth, JWT
+- **State Management:** React Hooks, localStorage
+- **Icons:** React Icons
+- **Notifications:** React Hot Toast
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Backend
+- **Runtime:** Node.js, Express.js
+- **Database:** MongoDB Atlas
+- **Authentication:** bcryptjs, JWT
+- **CORS:** Enabled for frontend domains
+- **Deployment:** Vercel (Frontend), Render (Backend)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 📁 Project Structure
