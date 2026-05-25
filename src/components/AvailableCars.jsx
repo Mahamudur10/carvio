@@ -4,29 +4,25 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 const AvailableCars = () => {
-    const [isVisible, setIsVisible] = useState(false);
-    const [loading, setLoading] = useState(true);
     const [cars, setCars] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setIsVisible(true);
         fetchCars();
     }, []);
 
     const fetchCars = async () => {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://carvio-server.vercel.app";
         try {
             const res = await fetch(`${API_URL}/explore-cars`);
             const data = await res.json();
-            setCars(data);
-        } catch (error) {
-            console.error('Error fetching cars:', error);
+            setCars(data || []);
+        } catch (err) {
+            console.error(err);
         } finally {
             setLoading(false);
         }
     };
-
-    const displayedCars = cars.slice(0, 6);
 
     const getTypeColor = (type) => {
         const colors = {
@@ -47,79 +43,144 @@ const AvailableCars = () => {
             : 'bg-gradient-to-r from-rose-600 to-red-600';
     };
 
+    if (loading) {
+        return (
+            <div className="bg-black py-20 text-center">
+                <div className="inline-block w-12 h-12 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-gray-400 mt-4">Loading premium cars...</p>
+            </div>
+        );
+    }
+
+    if (cars.length === 0) {
+        return (
+            <div className="bg-black py-20 text-center">
+                <p className="text-gray-400">No cars available.</p>
+            </div>
+        );
+    }
+
+    const displayedCars = cars.slice(0, 6);
+
     return (
-        <section style={{ background: '#0A0A0F' }} className="py-16 md:py-20">
+        <section className="py-20 bg-black">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 
-                <div className={`text-center max-w-3xl mx-auto mb-12 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-                    <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-4" style={{ background: 'rgba(218,165,32,0.1)', border: '1px solid rgba(218,165,32,0.2)' }}>
-                        <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#DAA520' }}></div>
-                        <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#DAA520' }}>Our Fleet</span>
+                {/* Section Header */}
+                <div className="text-center mb-16">
+                    <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-4 bg-yellow-500/10 border border-yellow-500/20">
+                        <div className="w-1.5 h-1.5 rounded-full animate-pulse bg-yellow-500"></div>
+                        <span className="text-xs font-semibold uppercase tracking-wider text-yellow-500">Our Fleet</span>
                     </div>
                     
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
                         <span className="text-white">Available</span>{' '}
-                        <span className="text-transparent bg-clip-text" style={{ background: 'linear-gradient(135deg, #DAA520 0%, #F5C842 40%, #DAA520 70%, #C8960C 100%)', WebkitBackgroundClip: 'text' }}>Cars</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-yellow-300">Cars</span>
                     </h2>
                     
-                    <p className="text-[#888880] text-lg max-w-2xl mx-auto">Choose from our wide range of premium cars at affordable prices</p>
+                    <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                        Choose from our wide range of premium cars at affordable prices
+                    </p>
                     
                     <div className="flex justify-center mt-4">
-                        <div className="w-16 h-px" style={{ background: 'linear-gradient(90deg, transparent, #DAA520, transparent)' }}></div>
+                        <div className="w-20 h-px bg-gradient-to-r from-transparent via-yellow-500 to-transparent"></div>
                     </div>
                 </div>
 
-                {loading ? (
-                    <div className="flex justify-center items-center py-20">
-                        <div className="relative">
-                            <div className="w-16 h-16 rounded-full" style={{ border: '2px solid rgba(218,165,32,0.2)' }}></div>
-                            <div className="w-16 h-16 rounded-full animate-spin absolute top-0" style={{ border: '2px solid transparent', borderTopColor: '#DAA520' }}></div>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                        {displayedCars.map((car, index) => (
-                            <div
-                                key={car._id}
-                                className={`group rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-                                style={{ transitionDelay: `${index * 100}ms`, background: 'rgba(20,20,25,0.8)', border: '1px solid rgba(218,165,32,0.15)', backdropFilter: 'blur(10px)' }}
-                            >
-                                <div className="relative h-48 md:h-56 overflow-hidden bg-[#0A0A0F]">
-                                    <img src={car.imageUrl || car.image} alt={car.carName || car.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                                    <div className="absolute top-3 right-3 px-3 py-1 rounded-lg text-sm font-bold shadow-lg" style={{ background: 'linear-gradient(135deg, #DAA520, #F5C842)', color: '#0A0A0F' }}>
-                                        ৳{car.dailyRentPrice || car.price}<span className="text-xs">/day</span>
+                {/* Cars Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {displayedCars.map((car, index) => (
+                        <div
+                            key={car._id}
+                            className="group rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2"
+                            style={{ 
+                                background: 'linear-gradient(135deg, rgba(20,20,25,0.9) 0%, rgba(15,15,20,0.8) 100%)',
+                                border: '1px solid rgba(218,165,32,0.15)',
+                                backdropFilter: 'blur(10px)',
+                                animationDelay: `${index * 100}ms`
+                            }}
+                        >
+                            {/* Image Container */}
+                            <div className="relative h-56 overflow-hidden bg-black">
+                                <img 
+                                    src={car.imageUrl || car.image} 
+                                    alt={car.carName || car.name}
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                    onError={(e) => {
+                                        e.target.src = 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=500';
+                                    }}
+                                />
+                                {/* Price Badge */}
+                                <div className="absolute top-4 right-4 px-3 py-1.5 rounded-lg text-sm font-bold shadow-lg bg-gradient-to-r from-yellow-500 to-yellow-400 text-black">
+                                    ৳{car.dailyRentPrice || car.price}<span className="text-xs font-normal">/day</span>
+                                </div>
+                                {/* Availability Badge */}
+                                <div className={`absolute bottom-4 left-4 ${getAvailabilityColor(car.availabilityStatus || car.availability)} text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-md backdrop-blur-sm`}>
+                                    {car.availabilityStatus || car.availability}
+                                </div>
+                                {/* Overlay Gradient */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            </div>
+                            
+                            {/* Content */}
+                            <div className="p-5">
+                                <div className="flex justify-between items-start mb-3">
+                                    <h3 className="text-xl font-bold transition-colors duration-300 text-white group-hover:text-yellow-500">
+                                        {car.carName || car.name}
+                                    </h3>
+                                    <span className={`px-2.5 py-1 rounded-md text-xs font-medium border ${getTypeColor(car.carType || car.type)}`}>
+                                        {car.carType || car.type}
+                                    </span>
+                                </div>
+                                
+                                {/* Features */}
+                                <div className="flex items-center gap-4 mb-4 text-gray-400 text-sm">
+                                    <div className="flex items-center gap-1.5">
+                                        <svg className="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.5v15m7.5-7.5h-15" />
+                                        </svg>
+                                        <span>{car.seatCapacity} Seats</span>
                                     </div>
-                                    <div className={`absolute bottom-3 left-3 ${getAvailabilityColor(car.availabilityStatus || car.availability)} text-white px-3 py-1 rounded-lg text-xs font-semibold shadow-md`}>
-                                        {car.availabilityStatus || car.availability}
+                                    <div className="flex items-center gap-1.5">
+                                        <svg className="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                        <span>{car.pickupLocation || car.location}</span>
                                     </div>
                                 </div>
                                 
-                                <div className="p-5">
-                                    <div className="flex justify-between items-start mb-3">
-                                        <h3 className="text-xl font-bold transition-colors text-white group-hover:text-[#DAA520]">{car.carName || car.name}</h3>
-                                        <span className={`px-2 py-1 rounded-md text-xs font-medium border ${getTypeColor(car.carType || car.type)}`}>{car.carType || car.type}</span>
-                                    </div>
-                                    
-                                    <div className="flex items-center gap-4 mb-3 text-sm" style={{ color: '#666660' }}>
-                                        <div className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.5v15m7.5-7.5h-15" /></svg><span>{car.seatCapacity} Seats</span></div>
-                                        <div className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>{car.pickupLocation || car.location}</span></div>
-                                    </div>
-                                    
-                                    <p className="text-[#666660] text-sm mb-4 line-clamp-2">{car.description}</p>
-                                    
-                                    <Link href={`/car/${car._id}`} className="w-full flex items-center justify-center gap-2 px-4 py-2.5 font-semibold rounded-xl transition-all duration-200 group-hover:scale-105" style={{ background: 'linear-gradient(135deg, #DAA520, #F5C842)', color: '#0A0A0F' }}>
-                                        View Details <svg className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                                    </Link>
-                                </div>
+                                {/* Description */}
+                                <p className="text-gray-500 text-sm mb-5 line-clamp-2 leading-relaxed">
+                                    {car.description || "Experience luxury and comfort with this premium vehicle. Perfect for your next journey."}
+                                </p>
+                                
+                                {/* View Details Button */}
+                                <Link
+                                    href={`/car/${car._id}`}
+                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 font-semibold rounded-xl transition-all duration-300 group-hover:scale-105 bg-gradient-to-r from-yellow-500 to-yellow-400 text-black hover:shadow-lg hover:shadow-yellow-500/25"
+                                >
+                                    View Details
+                                    <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                    </svg>
+                                </Link>
                             </div>
-                        ))}
-                    </div>
-                )}
+                        </div>
+                    ))}
+                </div>
 
-                {!loading && cars.length > 6 && (
+                {/* View All Button */}
+                {cars.length > 6 && (
                     <div className="text-center mt-12">
-                        <Link href="/explore-cars" className="inline-flex items-center gap-2 px-8 py-3.5 font-semibold rounded-xl transition-all duration-200 group" style={{ border: '1px solid rgba(218,165,32,0.4)', color: '#DAA520', background: 'transparent' }} onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(218,165,32,0.1)'; e.currentTarget.style.borderColor = '#DAA520'; }} onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(218,165,32,0.4)'; }}>
-                            View All Cars <svg className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                        <Link
+                            href="/explore-cars"
+                            className="inline-flex items-center gap-2 px-8 py-3.5 font-semibold rounded-xl transition-all duration-300 group border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+                        >
+                            View All Cars
+                            <svg className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
                         </Link>
                     </div>
                 )}

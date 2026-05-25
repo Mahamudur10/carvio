@@ -14,8 +14,7 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
+        if (localStorage.getItem('user')) {
             router.push('/');
         }
     }, [router]);
@@ -25,7 +24,7 @@ const LoginPage = () => {
         setLoading(true);
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
+            const res = await fetch('https://carvio-server.vercel.app/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
@@ -34,14 +33,7 @@ const LoginPage = () => {
             const data = await res.json();
 
             if (data.success) {
-                const userToStore = {
-                    id: data.user.id,
-                    name: data.user.name,
-                    email: data.user.email,
-                    image: data.user.photoURL,
-                    photoURL: data.user.photoURL
-                };
-                localStorage.setItem('user', JSON.stringify(userToStore));
+                localStorage.setItem('user', JSON.stringify(data.user));
                 toast.success('Login successful!');
                 router.push('/');
             } else {
@@ -55,44 +47,40 @@ const LoginPage = () => {
     };
 
     const handleGoogleLogin = () => {
-        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-        const redirectUri = "http://localhost:3000/api/auth/google/callback";
+        const clientId = "213640041962-hmhapk77hm3cpoa43uas51je3eqpnt61.apps.googleusercontent.com";
+        const redirectUri = "https://carvio.vercel.app/api/auth/google/callback";
         const scope = "email profile";
         const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
         window.location.href = googleAuthUrl;
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center py-12" style={{ background: '#0A0A0F' }}>
+        <div className="min-h-screen bg-black flex items-center justify-center py-12">
             <Toaster position="top-right" />
             <div className="container mx-auto px-4 max-w-md">
-                <div className="text-center mb-10">
-                    <h1 className="text-3xl font-bold text-white">Login to Carvio</h1>
-                    <p className="text-gray-400 mt-2">Access your account</p>
+                
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-4 bg-yellow-500/10 border border-yellow-500/20">
+                        <div className="w-1.5 h-1.5 rounded-full animate-pulse bg-yellow-500"></div>
+                        <span className="text-xs font-semibold uppercase tracking-wider text-yellow-500">Welcome Back</span>
+                    </div>
+                    
+                    <h1 className="text-3xl font-bold mb-2">
+                        <span className="text-white">Login to</span>{' '}
+                        <span className="text-yellow-500">Carvio</span>
+                    </h1>
+                    <p className="text-gray-400">Access your account to rent cars</p>
                 </div>
 
-                <Card className="rounded-2xl shadow-xl border-0" style={{ background: 'rgba(20,20,25,0.8)' }}>
+                <Card className="rounded-2xl bg-black/50 backdrop-blur-sm border border-yellow-500/20">
                     <div className="p-6">
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div>
-                                <label className="block text-sm font-semibold mb-2 text-[#DAA520]">Email Address *</label>
-                                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full px-4 py-3 rounded-xl bg-white/5 border border-[#DAA520]/20 text-white" />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold mb-2 text-[#DAA520]">Password *</label>
-                                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full px-4 py-3 rounded-xl bg-white/5 border border-[#DAA520]/20 text-white" />
-                            </div>
-                            <Button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-[#DAA520] to-[#F5C842] text-black font-semibold py-3 rounded-xl">
-                                {loading ? "Logging in..." : "Login"}
-                            </Button>
-                            <div className="relative my-6">
-                                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-700"></div></div>
-                                <div className="relative flex justify-center text-sm"><span className="px-2 bg-[#0A0A0F] text-gray-400">Or continue with</span></div>
-                            </div>
-                            <button type="button" onClick={handleGoogleLogin} className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-gray-700 text-white hover:bg-white/5">
-                                <FcGoogle className="text-xl" /> Continue with Google
-                            </button>
-                            <p className="text-center text-sm mt-6 text-gray-400">Don't have an account? <Link href="/register" className="text-[#DAA520] font-semibold">Register</Link></p>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email address" className="w-full px-4 py-2 rounded-xl bg-white/5 border border-yellow-500/20 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500" required />
+                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" className="w-full px-4 py-2 rounded-xl bg-white/5 border border-yellow-500/20 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500" required />
+                            <Button type="submit" disabled={loading} className="w-full bg-yellow-500 text-black font-semibold py-2 rounded-xl hover:bg-yellow-400 transition">{loading ? "Logging in..." : "Login"}</Button>
+                            <div className="flex items-center gap-3 my-4"><div className="flex-1 h-px bg-gray-700"></div><span className="text-gray-500 text-sm">OR</span><div className="flex-1 h-px bg-gray-700"></div></div>
+                            <button onClick={handleGoogleLogin} className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-gray-700 text-white hover:bg-white/5 transition"><FcGoogle className="text-xl" /> Continue with Google</button>
+                            <p className="text-center text-sm text-gray-500 mt-4">Don't have an account? <Link href="/register" className="text-yellow-500 hover:underline">Register</Link></p>
                         </form>
                     </div>
                 </Card>

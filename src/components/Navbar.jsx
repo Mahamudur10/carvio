@@ -1,10 +1,9 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 
 const Navbar = () => {
-    const router = useRouter();
     const pathname = usePathname();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -13,18 +12,23 @@ const Navbar = () => {
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
-        if (storedUser) setUser(JSON.parse(storedUser));
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
         setLoading(false);
     }, []);
 
     const isLoggedIn = !!user;
     const isActive = (path) => pathname === path;
 
-    const handleNavigation = (path) => router.push(path);
+    const handleNavigation = (path) => {
+        window.location.href = path;  // ← Force navigation
+    };
+
     const handleLogout = () => {
         localStorage.removeItem("user");
         setUser(null);
-        router.push("/");
+        window.location.href = "/";
     };
 
     if (loading) {
@@ -101,9 +105,9 @@ const Navbar = () => {
                                                 <div><p className="text-sm font-semibold text-white">{user?.name}</p><p className="text-xs text-gray-400 truncate">{user?.email}</p></div>
                                             </div>
                                         </div>
-                                        <button onClick={() => { handleNavigation("/add-car"); setIsDropdownOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-yellow-500 hover:bg-white/5 transition-colors">Add Car</button>
-                                        <button onClick={() => { handleNavigation("/my-bookings"); setIsDropdownOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-yellow-500 hover:bg-white/5 transition-colors">My Bookings</button>
-                                        <button onClick={() => { handleNavigation("/my-added-cars"); setIsDropdownOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-yellow-500 hover:bg-white/5 transition-colors">My Added Cars</button>
+                                        <button onClick={() => handleNavigation("/add-car")} className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-yellow-500 hover:bg-white/5 transition-colors">Add Car</button>
+                                        <button onClick={() => handleNavigation("/my-bookings")} className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-yellow-500 hover:bg-white/5 transition-colors">My Bookings</button>
+                                        <button onClick={() => handleNavigation("/my-added-cars")} className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:text-yellow-500 hover:bg-white/5 transition-colors">My Added Cars</button>
                                         <hr className="my-1 border-yellow-500/10" />
                                         <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors">Logout</button>
                                     </div>
@@ -130,13 +134,13 @@ const Navbar = () => {
                 {/* Mobile Menu */}
                 {isMenuOpen && (
                     <div className="md:hidden py-4 space-y-3 border-t border-yellow-500/10">
-                        <button onClick={() => { handleNavigation("/"); setIsMenuOpen(false); }} className="block py-2.5 px-2 rounded-lg text-gray-300 hover:text-yellow-500 hover:bg-white/5 w-full text-left">Home</button>
-                        <button onClick={() => { handleNavigation("/explore-cars"); setIsMenuOpen(false); }} className="block py-2.5 px-2 rounded-lg text-gray-300 hover:text-yellow-500 hover:bg-white/5 w-full text-left">Explore Cars</button>
+                        <button onClick={() => handleNavigation("/")} className="block py-2.5 px-2 rounded-lg text-gray-300 hover:text-yellow-500 hover:bg-white/5 w-full text-left">Home</button>
+                        <button onClick={() => handleNavigation("/explore-cars")} className="block py-2.5 px-2 rounded-lg text-gray-300 hover:text-yellow-500 hover:bg-white/5 w-full text-left">Explore Cars</button>
                         {isLoggedIn && (
                             <>
-                                <button onClick={() => { handleNavigation("/add-car"); setIsMenuOpen(false); }} className="block py-2.5 px-2 rounded-lg text-gray-300 hover:text-yellow-500 hover:bg-white/5 w-full text-left">Add Car</button>
-                                <button onClick={() => { handleNavigation("/my-bookings"); setIsMenuOpen(false); }} className="block py-2.5 px-2 rounded-lg text-gray-300 hover:text-yellow-500 hover:bg-white/5 w-full text-left">My Bookings</button>
-                                <button onClick={() => { handleNavigation("/my-added-cars"); setIsMenuOpen(false); }} className="block py-2.5 px-2 rounded-lg text-gray-300 hover:text-yellow-500 hover:bg-white/5 w-full text-left">My Added Cars</button>
+                                <button onClick={() => handleNavigation("/add-car")} className="block py-2.5 px-2 rounded-lg text-gray-300 hover:text-yellow-500 hover:bg-white/5 w-full text-left">Add Car</button>
+                                <button onClick={() => handleNavigation("/my-bookings")} className="block py-2.5 px-2 rounded-lg text-gray-300 hover:text-yellow-500 hover:bg-white/5 w-full text-left">My Bookings</button>
+                                <button onClick={() => handleNavigation("/my-added-cars")} className="block py-2.5 px-2 rounded-lg text-gray-300 hover:text-yellow-500 hover:bg-white/5 w-full text-left">My Added Cars</button>
                             </>
                         )}
                         <div className="border-t pt-3 border-yellow-500/10">
@@ -144,8 +148,8 @@ const Navbar = () => {
                                 <button onClick={handleLogout} className="block w-full text-left py-2.5 px-2 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors w-full text-left">Logout</button>
                             ) : (
                                 <div className="space-y-2">
-                                    <button onClick={() => { handleNavigation("/login"); setIsMenuOpen(false); }} className="block py-2.5 px-2 rounded-lg text-gray-300 hover:text-yellow-500 hover:bg-white/5 w-full text-left">Login</button>
-                                    <button onClick={() => { handleNavigation("/register"); setIsMenuOpen(false); }} className="block py-2.5 px-2 text-center rounded-lg font-medium w-full bg-yellow-500 text-black">Register</button>
+                                    <button onClick={() => handleNavigation("/login")} className="block py-2.5 px-2 rounded-lg text-gray-300 hover:text-yellow-500 hover:bg-white/5 w-full text-left">Login</button>
+                                    <button onClick={() => handleNavigation("/register")} className="block py-2.5 px-2 text-center rounded-lg font-medium w-full bg-yellow-500 text-black">Register</button>
                                 </div>
                             )}
                         </div>

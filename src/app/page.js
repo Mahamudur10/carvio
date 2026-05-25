@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Banner from "@/components/Banner";
 import AvailableCars from "@/components/AvailableCars";
 import WhyChooseUs from "@/components/WhyChooseUs";
 import HowItWorks from "@/components/HowItWorks";
 
-export default function HomePage() {
+function GoogleAuthHandler() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    
+
     useEffect(() => {
         const userParam = searchParams.get("user");
         if (userParam) {
@@ -18,14 +18,19 @@ export default function HomePage() {
                 const user = JSON.parse(decodeURIComponent(userParam));
                 localStorage.setItem("user", JSON.stringify(user));
                 router.replace("/");
-            } catch (error) {
-                console.error("Error parsing user:", error);
-            }
+            } catch (e) {}
         }
     }, [searchParams, router]);
-    
+
+    return null;
+}
+
+export default function HomePage() {
     return (
         <>
+            <Suspense fallback={null}>
+                <GoogleAuthHandler />
+            </Suspense>
             <Banner />
             <AvailableCars />
             <WhyChooseUs />
