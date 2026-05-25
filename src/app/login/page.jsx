@@ -47,24 +47,25 @@ const LoginPage = () => {
     };
 
     const handleGoogleLogin = () => {
-        const clientId = "213640041962-hmhapk77hm3cpoa43uas51je3eqpnt61.apps.googleusercontent.com";
-        const redirectUri = "https://carvio.vercel.app/api/auth/google/callback";
+        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+        const redirectUri = "https://carvio-three.vercel.app/api/auth/google/callback";
         const scope = "email profile";
         const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
         window.location.href = googleAuthUrl;
     };
 
+
     return (
         <div className="min-h-screen bg-black flex items-center justify-center py-12">
             <Toaster position="top-right" />
             <div className="container mx-auto px-4 max-w-md">
-                
+
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-4 bg-yellow-500/10 border border-yellow-500/20">
                         <div className="w-1.5 h-1.5 rounded-full animate-pulse bg-yellow-500"></div>
                         <span className="text-xs font-semibold uppercase tracking-wider text-yellow-500">Welcome Back</span>
                     </div>
-                    
+
                     <h1 className="text-3xl font-bold mb-2">
                         <span className="text-white">Login to</span>{' '}
                         <span className="text-yellow-500">Carvio</span>

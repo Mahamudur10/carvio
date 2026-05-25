@@ -75,13 +75,13 @@ const RegisterPage = () => {
     };
 
     const handleGoogleRegister = () => {
-        const clientId = "213640041962-hmhapk77hm3cpoa43uas51je3eqpnt61.apps.googleusercontent.com";
-        const redirectUri = "https://carvio.vercel.app/api/auth/google/callback";
-        const scope = "email profile";
-        const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
-        window.location.href = googleAuthUrl;
-    };
-
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    const redirectUri = "https://carvio-three.vercel.app/api/auth/google/callback";
+    const scope = "email profile";
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
+    window.location.href = googleAuthUrl;
+};
+    
     return (
         <div className="min-h-screen bg-black flex items-center justify-center py-12 sm:py-16 md:py-20">
             <Toaster position="top-right" />
