@@ -49,5 +49,3 @@ Carvio is a modern, full-stack car rental platform that allows users to browse, 
 - **Deployment:** Vercel (Frontend), Render (Backend)
 
 ---
-
-## 📁 Project Structure
